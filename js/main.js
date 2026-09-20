@@ -7,7 +7,7 @@
  * one-time confirmation email that must be accepted once.
  */
 const CONTACT_EMAIL = "dhavalkothari1997@gmail.com";
-const FORM_ENDPOINT = `https://formsubmit.co/ajax/${CONTACT_EMAIL}`;
+const FORM_ENDPOINT = `https://formsubmit.co/ajax/${CONTACT_EMAIL} method="POST"`;
 
 const SOCIAL_LINKS = [
   { label: "LinkedIn", href: "https://www.linkedin.com/in/dhaval-kothari/" },
