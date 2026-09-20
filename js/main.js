@@ -6,7 +6,7 @@
  * GitHub Pages). The first submission from the live domain triggers a
  * one-time confirmation email that must be accepted once.
  */
-const FORM_ENDPOINT = `https://formsubmit.co/ajax/9c1201f03ad5f01f0ecf4f3a5ddee253`;
+const FORM_ENDPOINT = "https://formsubmit.co/ajax/9c1201f03ad5f01f0ecf4f3a5ddee253";
 
 const SOCIAL_LINKS = [
   { label: "LinkedIn", href: "https://www.linkedin.com/in/dhaval-kothari/" },
