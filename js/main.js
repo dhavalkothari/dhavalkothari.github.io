@@ -329,6 +329,10 @@ function setupContactForm() {
         body: JSON.stringify(payload),
       });
       if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+      const result = await response.json().catch(() => ({ success: "true" }));
+      if (String(result.success) !== "true") {
+        throw new Error(result.message || "Submission rejected");
+      }
       form.reset();
       show("Thank you. Your project context has been received.");
     } catch (error) {
