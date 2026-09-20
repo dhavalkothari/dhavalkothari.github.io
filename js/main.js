@@ -337,7 +337,7 @@ function setupContactForm() {
       show("Thank you. Your project context has been received.");
     } catch (error) {
       show(
-        `Sending failed. Please email ${CONTACT_EMAIL} directly, or try again in a moment.`
+        "Sending failed. Please try again in a moment, or reach out via LinkedIn."
       );
     } finally {
       if (submit) {
