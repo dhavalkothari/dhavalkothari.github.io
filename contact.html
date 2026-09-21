@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Contact | Dhaval Kothari</title>
+    <meta property="og:title" content="Contact | Dhaval Kothari" />
+    <meta property="og:description" content="Start with the business problem: a reporting, data, automation, or AI opportunity worth exploring." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta
       name="description"
       content="Start with the business problem: a reporting, data, automation, or AI opportunity worth exploring."
@@ -20,9 +24,11 @@
       <div data-site-header></div>
     </header>
     <noscript>
-      <div class="container" style="padding: 14px 0;">
+      <div class="container noscript-nav">
         <a href="index.html">Home</a> ·
         <a href="work.html">Work</a> ·
+        <a href="services.html">Services</a> ·
+        <a href="blogs.html">Blogs</a> ·
         <a href="about.html">About</a> ·
         <a href="resume.html">Resume</a> ·
         <a href="contact.html">Contact</a>
@@ -43,11 +49,15 @@
 
       <section class="page-body">
         <div class="container story">
-          <article class="story-card">
-            <h2>Direct contact options</h2>
-            <p>
-              Prefer a direct channel? Reach out by email or connect on any of these profiles.
-            </p>
+          <article class="story-card contact-choice-card">
+            <div>
+              <h2>Choose how to start</h2>
+              <p>Use the form for project context, schedule a short call, or connect through the public profiles below.</p>
+            </div>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="https://calendar.app.google/BGmovsgcMaz1fGqo7" data-schedule-call>Schedule a call ↗</a>
+              <a class="btn btn-secondary" href="#project-context">Share project context</a>
+            </div>
             <ul class="contact-options">
               <li><a href="https://www.linkedin.com/in/dhaval-kothari/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
               <li><a href="https://medium.com/@dhaval_kothari" target="_blank" rel="noopener noreferrer">Medium</a></li>
@@ -55,7 +65,7 @@
             </ul>
           </article>
 
-          <article class="story-card">
+          <article class="story-card" id="project-context">
             <h2>Share your project context</h2>
             <p>
               Share a short outline of the situation, what is currently difficult, the data or systems involved,

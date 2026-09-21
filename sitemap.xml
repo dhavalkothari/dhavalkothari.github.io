@@ -2,6 +2,8 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://dhavalkothari.github.io/</loc></url>
   <url><loc>https://dhavalkothari.github.io/work.html</loc></url>
+  <url><loc>https://dhavalkothari.github.io/services.html</loc></url>
+  <url><loc>https://dhavalkothari.github.io/blogs.html</loc></url>
   <url><loc>https://dhavalkothari.github.io/case-study.html?slug=enterprise-infrastructure-intelligence</loc></url>
   <url><loc>https://dhavalkothari.github.io/case-study.html?slug=snowflake-finops-command-center</loc></url>
   <url><loc>https://dhavalkothari.github.io/case-study.html?slug=action-item-tracker</loc></url>
@@ -9,4 +11,7 @@
   <url><loc>https://dhavalkothari.github.io/about.html</loc></url>
   <url><loc>https://dhavalkothari.github.io/resume.html</loc></url>
   <url><loc>https://dhavalkothari.github.io/contact.html</loc></url>
+  <url><loc>https://dhavalkothari.github.io/blog-sql-rewrite-90-minutes-to-under-10.html</loc></url>
+  <url><loc>https://dhavalkothari.github.io/blog-fabric-directquery-faster-than-snowflake.html</loc></url>
+  <url><loc>https://dhavalkothari.github.io/blog-humans-and-ai-behavioural-resemblance.html</loc></url>
 </urlset>

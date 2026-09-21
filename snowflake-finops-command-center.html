@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snowflake FinOps Command Center | Interactive Portfolio Case Study</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --portfolio-green: #1f4c3d;
+  --portfolio-green-light: #2f7661;
+  --portfolio-green-muted: #e3ece6;
+  --sf-blue: #3b829d;
+  --sf-blue-dark: #244f61;
+  --sf-blue-muted: #e4f0f2;
+  --bg: #f4efe6;
+  --surface: #ffffff;
+  --surface2: #faf6ef;
+  --border: #ded7ca;
+  --border2: #c8bdab;
+  --text: #16211d;
+  --text2: #55605a;
+  --text3: #737b75;
+  --green: #059669;
+  --green-bg: #ecfdf5;
+  --red: #dc2626;
+  --red-bg: #fef2f2;
+  --amber: #d97706;
+  --amber-bg: #fffbeb;
+  --header-h: 56px;
+  --nav-h: 44px;
+  --filter-h: 52px;
+  --shadow: 0 1px 3px rgba(15,23,42,.06), 0 4px 16px rgba(15,23,42,.04);
+  --chart-palette: #29B5E8, #1f4c3d, #059669, #ea580c, #dc2626, #6366f1, #0891b2, #db2777, #ca8a04, #14b8a6;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', system-ui, sans-serif; font-size: 14px; color: var(--text); background: var(--bg); min-height: 100vh; line-height: 1.5; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* ── Top bar ── */
+.topbar {
+  position: sticky; top: 0; z-index: 500;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.topbar-inner {
+  max-width: 1440px; margin: 0 auto; padding: 0 20px;
+  height: var(--header-h); display: flex; align-items: center; gap: 16px;
+}
+.brand { display: flex; align-items: center; gap: 12px; flex-shrink: 0; cursor: pointer; }
+.brand-mark {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--portfolio-green), var(--sf-blue));
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 15px;
+}
+.brand-text h1 { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: -.02em; }
+.brand-text p { font-size: 11px; color: var(--text2); }
+.sf-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 999px; font-size: 10px; font-weight: 600;
+  background: var(--sf-blue-muted); color: var(--sf-blue-dark); border: 1px solid rgba(41,181,232,.35);
+}
+.sf-pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--sf-blue); }
+.topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.btn {
+  padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text2);
+  cursor: pointer; font-family: inherit; transition: .15s;
+}
+.btn:hover { border-color: var(--portfolio-green); color: var(--portfolio-green); }
+.btn-primary { background: var(--portfolio-green); color: #fff; border-color: var(--portfolio-green); }
+.btn-primary:hover { background: var(--portfolio-green-light); border-color: var(--portfolio-green-light); color: #fff; }
+.btn-sf { background: var(--sf-blue); color: #fff; border-color: var(--sf-blue); }
+.live-badge { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 6px; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+/* ── Report nav ── */
+.report-nav {
+  background: var(--surface2); border-bottom: 1px solid var(--border);
+  overflow-x: auto; scrollbar-width: none;
+}
+.report-nav::-webkit-scrollbar { display: none; }
+.report-nav-inner {
+  max-width: 1440px; margin: 0 auto; padding: 0 12px;
+  display: flex; gap: 2px; min-height: var(--nav-h); align-items: stretch;
+}
+.nav-tab {
+  padding: 0 16px; border: none; background: none; cursor: pointer;
+  font-family: inherit; font-size: 12px; font-weight: 600; color: var(--text2);
+  border-bottom: 2px solid transparent; white-space: nowrap; transition: .15s;
+  display: flex; align-items: center; gap: 6px;
+}
+.nav-tab:hover { color: var(--portfolio-green); background: rgba(31,76,61,.04); }
+.nav-tab.active { color: var(--sf-blue-dark); border-bottom-color: var(--sf-blue); background: var(--sf-blue-muted); }
+.nav-tab.home-tab.active { color: var(--portfolio-green); border-bottom-color: var(--portfolio-green); background: var(--portfolio-green-muted); }
+
+/* ── Filters ── */
+.filter-bar {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  display: none;
+}
+.filter-bar.visible { display: block; }
+.filter-inner {
+  max-width: 1440px; margin: 0 auto; padding: 10px 20px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+}
+.filter-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; }
+.filter-select {
+  padding: 6px 28px 6px 10px; border-radius: 6px; border: 1px solid var(--border2);
+  font-size: 12px; font-family: inherit; background: var(--surface2); color: var(--text);
+  cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 8px center;
+}
+.filter-banner {
+  display: none; max-width: 1440px; margin: 0 auto; padding: 8px 20px;
+  background: var(--sf-blue-muted); border-bottom: 1px solid rgba(41,181,232,.3);
+  font-size: 12px; color: var(--sf-blue-dark);
+}
+.filter-banner.visible { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+/* ── Main ── */
+.main { max-width: 1440px; margin: 0 auto; padding: 20px; }
+.view { display: none; }
+.view.active { display: block; }
+
+/* ── Home ── */
+.hero-strip {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;
+}
+@media (max-width: 900px) { .hero-strip { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 768px) {
+  .topbar-inner { height: auto; min-height: var(--header-h); padding: 10px 14px; display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+  .brand { min-width: 0; }
+  .brand-text { min-width: 0; }
+  .brand-text h1, .brand-text p { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sf-pill, .live-badge { display: none; }
+  .topbar-actions { margin-left: 0; }
+  .report-nav { scrollbar-width: thin; }
+  .report-nav-inner { padding: 0 10px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .nav-tab { flex: 0 0 auto; padding: 0 12px; min-height: 42px; }
+  .main { padding: 16px; }
+  .hero-strip { grid-template-columns: 1fr; }
+  .report-grid { grid-template-columns: 1fr; }
+  .table-search { width: 100%; }
+}
+@media (max-width: 430px) {
+  .brand-mark { width: 32px; height: 32px; }
+  .topbar-actions .btn:not(.btn-sf) { display: none; }
+  .btn { padding: 7px 10px; }
+}
+.hero-metric {
+  background: var(--surface); border-radius: 12px; padding: 16px 18px;
+  border: 1px solid var(--border); box-shadow: var(--shadow);
+  position: relative; overflow: hidden;
+}
+.hero-metric::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--sf-blue), var(--portfolio-green));
+}
+.hero-metric .label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.hero-metric .value { font-size: 26px; font-weight: 700; letter-spacing: -.03em; }
+.hero-metric .sub { font-size: 12px; margin-top: 4px; }
+.hero-metric .sub.up { color: var(--green); }
+.hero-metric .sub.down { color: var(--red); }
+.persona-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; align-items: center; }
+.persona-row span { font-size: 12px; font-weight: 600; color: var(--text2); }
+.persona-chip {
+  padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  border: 1px solid var(--border2); background: var(--surface); cursor: pointer; transition: .15s;
+}
+.persona-chip:hover, .persona-chip.active { background: var(--portfolio-green); color: #fff; border-color: var(--portfolio-green); }
+.spotlight {
+  background: linear-gradient(135deg, var(--sf-blue-dark) 0%, var(--portfolio-green) 100%);
+  border-radius: 14px; padding: 22px 26px; color: #fff; margin-bottom: 20px;
+  display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center;
+}
+@media (max-width: 768px) { .spotlight { grid-template-columns: 1fr; } }
+.spotlight h2 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.spotlight p { font-size: 13px; opacity: .9; max-width: 560px; line-height: 1.6; }
+.spotlight-stat { text-align: center; padding: 12px 20px; background: rgba(255,255,255,.12); border-radius: 10px; }
+.spotlight-stat .num { font-size: 32px; font-weight: 700; }
+.spotlight-stat .lbl { font-size: 11px; opacity: .85; margin-top: 4px; }
+.tech-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+.tech-badge {
+  font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 6px;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text2);
+}
+.tech-badge.sf { border-color: var(--sf-blue); color: var(--sf-blue-dark); background: var(--sf-blue-muted); }
+.report-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.report-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 18px; cursor: pointer; transition: .2s; box-shadow: var(--shadow);
+}
+.report-card:hover { border-color: var(--sf-blue); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(41,181,232,.12); }
+.report-card.highlight { border-color: var(--sf-blue); background: linear-gradient(180deg, var(--sf-blue-muted) 0%, var(--surface) 40%); }
+.report-card .rc-icon { font-size: 24px; margin-bottom: 10px; }
+.report-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.report-card p { font-size: 12px; color: var(--text2); line-height: 1.5; }
+.report-card .rc-kpi { margin-top: 10px; font-size: 11px; font-weight: 600; color: var(--sf-blue-dark); }
+
+/* ── Report pages ── */
+.page-header { margin-bottom: 18px; }
+.page-header h2 { font-size: 20px; font-weight: 700; letter-spacing: -.02em; }
+.page-header p { font-size: 13px; color: var(--text2); margin-top: 4px; max-width: 720px; }
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.kpi-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 16px; cursor: pointer; transition: .15s; position: relative;
+}
+.kpi-card:hover { border-color: var(--sf-blue); }
+.kpi-card.drill-active { border-color: var(--portfolio-green); box-shadow: 0 0 0 2px rgba(31,76,61,.15); }
+.kpi-card .k-label { font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; }
+.kpi-card .k-value { font-size: 22px; font-weight: 700; margin: 4px 0; letter-spacing: -.02em; }
+.kpi-card .k-delta { font-size: 11px; font-weight: 600; }
+.kpi-card .k-delta.pos { color: var(--green); }
+.kpi-card .k-delta.neg { color: var(--red); }
+.kpi-card .k-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+@media (max-width: 900px) { .chart-grid { grid-template-columns: 1fr; } }
+.chart-panel {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px; box-shadow: var(--shadow);
+}
+.chart-panel h3 { font-size: 13px; font-weight: 700; margin-bottom: 12px; color: var(--text); }
+.chart-wrap { position: relative; height: 220px; }
+.chart-wrap.tall { height: 280px; }
+.insight-bar {
+  background: var(--green-bg); border: 1px solid rgba(5,150,105,.25); border-radius: 10px;
+  padding: 12px 16px; margin-bottom: 18px; font-size: 13px; color: #065f46;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.insight-bar.warn { background: var(--amber-bg); border-color: rgba(217,119,6,.25); color: #92400e; }
+
+/* ── Tables ── */
+.table-panel {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden; box-shadow: var(--shadow); margin-bottom: 18px;
+}
+.table-header {
+  padding: 14px 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+}
+.table-header h3 { font-size: 13px; font-weight: 700; }
+.table-search {
+  padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border2);
+  font-size: 12px; font-family: inherit; width: 200px;
+}
+.table-scroll { overflow-x: auto; max-height: 340px; overflow-y: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th {
+  text-align: left; padding: 10px 14px; background: var(--surface2);
+  font-weight: 600; color: var(--text2); border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 1; white-space: nowrap;
+}
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:hover td { background: rgba(41,181,232,.04); }
+tr.row-highlight td { background: var(--sf-blue-muted); }
+.status { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+.status.done { background: var(--green-bg); color: var(--green); }
+.status.open { background: var(--amber-bg); color: var(--amber); }
+.status.crit { background: var(--red-bg); color: var(--red); }
+.status.rewrite { background: var(--sf-blue-muted); color: var(--sf-blue-dark); }
+.tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: var(--surface2); border: 1px solid var(--border); }
+
+/* ── Glossary overlay ── */
+.overlay {
+  display: none; position: fixed; inset: 0; z-index: 800;
+  background: rgba(15,23,42,.45); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center; padding: 20px;
+}
+.overlay.open { display: flex; }
+.modal {
+  background: var(--surface); border-radius: 14px; width: 100%; max-width: 640px;
+  max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 24px 64px rgba(0,0,0,.2);
+}
+.modal-head { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-head h2 { font-size: 16px; font-weight: 700; }
+.modal-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
+.modal-body input { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border2); margin-bottom: 12px; font-family: inherit; }
+.gloss-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.gloss-item h4 { font-size: 13px; font-weight: 700; color: var(--portfolio-green); }
+.gloss-item p { font-size: 12px; color: var(--text2); margin-top: 4px; }
+.gloss-item .formula { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+/* ── Tour ── */
+.tour-tip {
+  display: none; position: fixed; z-index: 900; max-width: 300px;
+  background: var(--text); color: #fff; border-radius: 10px; padding: 14px 16px;
+  font-size: 13px; box-shadow: 0 12px 40px rgba(0,0,0,.25);
+}
+.tour-tip.open { display: block; }
+.tour-tip .tour-actions { margin-top: 12px; display: flex; gap: 8px; justify-content: flex-end; }
+.tour-tip .btn { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.2); color: #fff; }
+.tour-tip .btn-primary { background: var(--sf-blue); border-color: var(--sf-blue); }
+
+.footer-note {
+  text-align: center; padding: 24px 20px 40px; font-size: 11px; color: var(--text3);
+}
+.crossfilter-hint { font-size: 11px; color: var(--text3); margin-bottom: 14px; padding: 8px 12px; background: var(--surface2); border-radius: 8px; border: 1px dashed var(--border2); }
+.crossfilter-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; align-items: center; }
+.crossfilter-chips:empty { display: none; }
+.cf-chip { font-size: 11px; padding: 4px 10px; border-radius: 999px; background: var(--portfolio-green-muted); color: var(--portfolio-green); border: 1px solid rgba(31,76,61,.25); display: inline-flex; align-items: center; gap: 6px; }
+.cf-chip button { border: none; background: none; cursor: pointer; font-size: 14px; line-height: 1; color: var(--portfolio-green); }
+.chart-panel { position: relative; }
+.chart-panel.crossfilter-active { border-color: var(--portfolio-green); box-shadow: 0 0 0 2px rgba(31,76,61,.12); }
+.chart-panel canvas { cursor: pointer; }
+.chart-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+.chart-head h3 { margin: 0; flex: 1; }
+.visual-host { position: relative; min-width: 0; }
+.visual-more-wrap { position: absolute; top: 8px; right: 8px; z-index: 12; opacity: 0; pointer-events: none; transition: opacity .15s; }
+.visual-host:hover .visual-more-wrap, .visual-host:focus-within .visual-more-wrap, .visual-host.tour-hover .visual-more-wrap, .visual-more-wrap.is-open { opacity: 1; pointer-events: auto; }
+.kpi-row .visual-host .visual-more-wrap { top: 4px; right: 4px; }
+.visual-more-btn { width: 26px; height: 26px; border: 1px solid var(--border2); border-radius: 6px; background: var(--surface); box-shadow: var(--shadow); cursor: pointer; font-size: 16px; line-height: 1; color: var(--text2); }
+.visual-more-btn:hover { border-color: var(--portfolio-green); color: var(--portfolio-green); }
+.export-menu-pop { position: absolute; top: 100%; right: 0; margin-top: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 500; min-width: 170px; overflow: hidden; }
+.export-menu-pop button { display: block; width: 100%; text-align: left; padding: 10px 14px; border: none; background: none; font-size: 12px; cursor: pointer; font-family: inherit; color: var(--text); }
+.export-menu-pop button:hover { background: var(--surface2); }
+tbody tr.dimmed { opacity: .28; }
+tbody tr.highlighted td { background: rgba(41,181,232,.12); }
+.kpi-card.drillable { cursor: pointer; }
+.kpi-card.drillable::after { content: '↳ drill'; position: absolute; bottom: 6px; right: 8px; font-size: 9px; color: var(--text3); opacity: 0; transition: opacity .15s; }
+.kpi-card.drillable:hover::after { opacity: 1; }
+.drill-panel { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 18px; overflow: hidden; box-shadow: var(--shadow); }
+.drill-panel.open { display: block; animation: slideDown .25s ease; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.drill-head { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--surface2); }
+.drill-head h4 { font-size: 13px; font-weight: 700; }
+.drill-body { padding: 0; max-height: 280px; overflow: auto; }
+.drill-body table { font-size: 12px; }
+.drill-journey { margin-top: 20px; padding: 18px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); min-height: 140px; }
+.drill-journey.tour-hover { z-index: 9003; position: relative; }
+.dj-header { margin-bottom: 12px; }
+.dj-header h3 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.dj-header p { font-size: 12px; color: var(--text2); }
+.dj-breadcrumb { font-size: 11px; color: var(--text3); margin-bottom: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.dj-breadcrumb a { color: var(--portfolio-green); cursor: pointer; font-weight: 600; text-decoration: none; }
+.dj-breadcrumb a:hover { text-decoration: underline; }
+.dj-breadcrumb strong { color: var(--text); }
+.dj-breadcrumb em { color: var(--sf-blue-dark); font-style: normal; font-weight: 600; }
+.dj-domain-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.dj-domain-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: .15s; background: var(--surface2); }
+.dj-domain-card:hover { border-color: var(--sf-blue); box-shadow: 0 4px 16px rgba(41,181,232,.12); transform: translateY(-1px); }
+.dj-domain-card .dj-icon { font-size: 18px; margin-bottom: 6px; }
+.dj-domain-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.dj-domain-card .dj-kpi { font-size: 11px; font-weight: 600; color: var(--sf-blue-dark); margin-bottom: 4px; }
+.dj-domain-card .dj-roles { font-size: 10px; color: var(--text3); }
+.dj-role-ladder { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 12px; border-top: 1px dashed var(--border2); }
+.dj-role-step { flex: 1; min-width: 140px; padding: 8px 10px; background: var(--surface2); border-radius: 8px; border-left: 3px solid var(--portfolio-green); }
+.dj-role-step.finance { border-left-color: var(--green); }
+.dj-role-step.platform { border-left-color: var(--sf-blue); }
+.dj-role-step.analyst { border-left-color: var(--amber); }
+.dj-role-step .rs-label { font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--text3); letter-spacing: .05em; }
+.dj-role-step .rs-text { font-size: 11px; color: var(--text2); margin-top: 3px; line-height: 1.4; }
+.dj-tier-row { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.dj-tier-pill { padding: 5px 12px; border-radius: 999px; font-size: 11px; font-weight: 600; border: 1px solid var(--border2); background: var(--surface2); color: var(--text2); cursor: pointer; }
+.dj-tier-pill.active { background: var(--portfolio-green-muted); border-color: var(--portfolio-green); color: var(--portfolio-green); }
+.dj-tier-pill.done { border-color: var(--green); color: var(--green); }
+.deep-drill-panel { display: none; margin-top: 12px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface2); }
+.deep-drill-panel.open { display: block; }
+.deep-drill-head { padding: 10px 14px; background: linear-gradient(90deg, var(--sf-blue-muted), var(--portfolio-green-muted)); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.deep-drill-head h4 { font-size: 12px; font-weight: 700; }
+.deep-drill-body { padding: 0; max-height: 220px; overflow: auto; }
+.deep-drill-body table { width: 100%; font-size: 11px; }
+tbody tr.drillable-row { cursor: pointer; }
+tbody tr.drillable-row:hover td { background: rgba(31,76,61,.06); }
+.glossary-page .gloss-cat { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text3); margin: 18px 0 8px; letter-spacing: .06em; }
+.tour-overlay { display: none; position: fixed; inset: 0; z-index: 9000; }
+.tour-overlay.open { display: block; }
+.tour-spotlight { position: fixed; border: 2px solid var(--sf-blue); border-radius: 10px; z-index: 9001; pointer-events: none; box-shadow: 0 0 0 max(100vw,100vh) rgba(15,23,42,.55); transition: all .25s ease; }
+.tour-card { position: fixed; z-index: 9002; width: min(400px,92vw); background: var(--surface); border-radius: 12px; padding: 18px 20px; box-shadow: 0 16px 48px rgba(0,0,0,.25); }
+.tour-card h4 { font-size: 15px; font-weight: 700; color: var(--portfolio-green); margin-bottom: 8px; }
+.tour-card p { font-size: 13px; color: var(--text2); line-height: 1.55; margin-bottom: 14px; }
+.tour-card-actions { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.app-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #0f172a; color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 13px; z-index: 9500; opacity: 0; transition: .3s; pointer-events: none; }
+.app-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.export-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 8500; align-items: center; justify-content: center; padding: 20px; }
+.export-modal-overlay.open { display: flex; }
+.export-modal { background: var(--surface); border-radius: 12px; max-width: 520px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+.export-modal-head { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.export-modal-body { padding: 16px 18px; }
+.export-modal-body pre { background: var(--surface2); padding: 12px; border-radius: 8px; font-size: 11px; max-height: 220px; overflow: auto; font-family: 'JetBrains Mono', monospace; }
+.export-modal-foot { padding: 12px 18px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand" onclick="navigate('home')">
+      <div class="brand-mark">SF</div>
+      <div class="brand-text">
+        <h1>Snowflake Platform Command Center</h1>
+        <p>Interactive portfolio demonstrator · illustrative data</p>
+      </div>
+    </div>
+    <span class="sf-pill">Snowflake · Data Platform</span>
+    <div class="topbar-actions">
+      <span class="live-badge"><span class="live-dot"></span> Refreshed <span id="live-ts">05:00 UTC</span></span>
+      <button class="btn" onclick="openGlossary()">Glossary</button>
+      <button class="btn btn-sf" onclick="startTour()">Guided Tour</button>
+    </div>
+  </div>
+  <nav class="report-nav">
+    <div class="report-nav-inner" id="report-nav">
+      <button class="nav-tab home-tab active" data-view="home">⌂ Overview</button>
+      <button class="nav-tab" data-view="executive">Executive</button>
+      <button class="nav-tab" data-view="warehouse">Warehouse</button>
+      <button class="nav-tab" data-view="queries">Query Performance</button>
+      <button class="nav-tab" data-view="storage">Storage</button>
+      <button class="nav-tab" data-view="attribution">Attribution</button>
+      <button class="nav-tab" data-view="pipelines">Pipelines</button>
+      <button class="nav-tab" data-view="backlog">Optimization</button>
+      <button class="nav-tab" data-view="glossary">Glossary</button>
+    </div>
+  </nav>
+</div>
+
+<div class="filter-bar" id="filter-bar">
+  <div class="filter-inner">
+    <span class="filter-label">Scope</span>
+    <select class="filter-select" id="f-division" onchange="applyFilters()">
+      <option value="all">All Divisions</option>
+      <option value="acute">Acute Care</option>
+      <option value="ambulatory">Ambulatory</option>
+      <option value="payer">Payer & Pop Health</option>
+      <option value="corporate">Corporate</option>
+      <option value="research">Research</option>
+    </select>
+    <select class="filter-select" id="f-env" onchange="applyFilters()">
+      <option value="all">All Environments</option>
+      <option value="prod">Production</option>
+      <option value="qa">QA</option>
+      <option value="dev">Development</option>
+      <option value="sandbox">Sandbox</option>
+    </select>
+    <select class="filter-select" id="f-wh" onchange="applyFilters()">
+      <option value="all">All Warehouse Classes</option>
+      <option value="exec">Executive (XS)</option>
+      <option value="standard">Standard (S–M)</option>
+      <option value="analytics">Analytics (L–XL)</option>
+      <option value="etl">ETL (L)</option>
+    </select>
+    <select class="filter-select" id="f-period" onchange="applyFilters()">
+      <option value="fy25-q4">FY25 Q4 (Current)</option>
+      <option value="fy25-q3">FY25 Q3</option>
+      <option value="fy25-ytd">FY25 YTD</option>
+    </select>
+    <button class="btn" onclick="clearFilters()">Reset</button>
+  </div>
+</div>
+<div class="filter-banner" id="filter-banner">
+  <span id="filter-banner-text">Filtered view active</span>
+  <button class="btn" onclick="clearFilters()">Clear filters</button>
+</div>
+
+<main class="main">
+
+<!-- HOME -->
+<section class="view active" id="view-home">
+  <div class="hero-strip">
+    <div class="hero-metric"><div class="label">Monthly Credits</div><div class="value" data-kpi="credits">48,200</div><div class="sub down">↓ 22% vs pre-program</div></div>
+    <div class="hero-metric"><div class="label">Run-Rate ($)</div><div class="value" data-kpi="dollars">$139K</div><div class="sub down">Within ±5% budget</div></div>
+    <div class="hero-metric"><div class="label">Savings YTD</div><div class="value">$1.05M</div><div class="sub up">Validated methodology</div></div>
+    <div class="hero-metric"><div class="label">Modernization</div><div class="value">77%</div><div class="sub up">41 / 53 pipelines retired</div></div>
+  </div>
+  <div class="persona-row">
+    <span>I am a:</span>
+    <button class="persona-chip active" data-persona="all">All</button>
+    <button class="persona-chip" data-persona="executive">Executive</button>
+    <button class="persona-chip" data-persona="finops">Finance & Cost</button>
+    <button class="persona-chip" data-persona="platform">Platform Engineering</button>
+  </div>
+  <div class="spotlight">
+    <div>
+      <h2>Query Rewrite Program — Self-Join Elimination</h2>
+      <p>23 high-cost queries rewritten using window functions and CASE logic instead of self-joins on clinical event facts. Average compute reduction on the rewrite set exceeds seventy percent — the largest single optimization lever in SDPM Phase 1.</p>
+    </div>
+    <div class="spotlight-stat"><div class="num">72%</div><div class="lbl">Avg compute ↓ on rewrite set</div></div>
+  </div>
+  <div class="tech-badges">
+    <span class="tech-badge sf">Snowflake</span>
+    <span class="tech-badge">dbt</span>
+    <span class="tech-badge">Fivetran</span>
+    <span class="tech-badge">Alteryx (legacy)</span>
+    <span class="tech-badge">PySpark</span>
+    <span class="tech-badge">Power BI</span>
+    <span class="tech-badge">Tableau</span>
+    <span class="tech-badge">Azure</span>
+    <span class="tech-badge">AWS</span>
+  </div>
+  <div class="report-grid" id="report-grid"></div>
+</section>
+
+<!-- EXECUTIVE -->
+<section class="view" id="view-executive">
+  <div class="page-header"><h2>Executive Summary</h2><p>Platform health for CDAO steering — credits, budget variance, modernization progress, and savings validation.</p></div>
+  <p class="crossfilter-hint">Click chart segments to cross-filter this page · Click KPI cards for drill-through · Hover visuals for ⋯ export · <span class="mono">Esc</span> clears cross-filter</p>
+  <div class="crossfilter-chips" id="cf-chips-exec"></div>
+  <div class="kpi-row" id="exec-kpis"></div>
+  <div id="drill-exec" class="drill-panel"></div>
+  <div class="chart-grid">
+    <div class="visual-host"><div class="chart-panel" data-cf-group="exec"><div class="chart-head"><h3>Credit Consumption — 12 Month Trend</h3></div><div class="chart-wrap tall"><canvas id="chart-credit-trend"></canvas></div></div></div>
+    <div class="visual-host"><div class="chart-panel" data-cf-group="exec"><div class="chart-head"><h3>Credits by Care Division</h3></div><div class="chart-wrap tall"><canvas id="chart-division"></canvas></div></div></div>
+  </div>
+  <div class="chart-grid">
+    <div class="visual-host"><div class="chart-panel" data-cf-group="exec"><div class="chart-head"><h3>Budget vs Actual ($K)</h3></div><div class="chart-wrap"><canvas id="chart-budget"></canvas></div></div></div>
+    <div class="visual-host"><div class="chart-panel" data-cf-group="exec"><div class="chart-head"><h3>Optimization Savings by Category</h3></div><div class="chart-wrap"><canvas id="chart-savings-cat"></canvas></div></div></div>
+  </div>
+  <div class="drill-journey" id="drill-journey-exec"></div>
+</section>
+
+<!-- WAREHOUSE -->
+<section class="view" id="view-warehouse">
+  <div class="page-header"><h2>Warehouse & Compute</h2><p>Utilization, queue time, auto-suspend compliance, and idle credit waste — consolidated from 18 to 6 right-sized warehouses.</p></div>
+  <p class="crossfilter-hint">Click chart segments to cross-filter · Click KPI cards for drill-through · Hover visuals for ⋯ export</p>
+  <div class="crossfilter-chips" id="cf-chips-warehouse"></div>
+  <div class="kpi-row" id="wh-kpis"></div>
+  <div id="drill-warehouse" class="drill-panel"></div>
+  <div class="insight-bar warn" id="wh-insight">19% of monthly credits attributed to idle warehouse time in non-prod — auto-suspend compliance at 94% (target 98%).</div>
+  <div class="chart-grid">
+    <div class="visual-host"><div class="chart-panel" data-cf-group="warehouse"><div class="chart-head"><h3>Utilization by Warehouse</h3></div><div class="chart-wrap tall"><canvas id="chart-wh-util"></canvas></div></div></div>
+    <div class="visual-host"><div class="chart-panel" data-cf-group="warehouse"><div class="chart-head"><h3>Credits by Size Tier</h3></div><div class="chart-wrap tall"><canvas id="chart-wh-tier"></canvas></div></div></div>
+  </div>
+  <div class="visual-host"><div class="table-panel" data-export-title="Warehouse Inventory"><div class="table-header"><h3>Warehouse Inventory</h3><input class="table-search" placeholder="Search warehouse…" oninput="filterTable('wh-table', this.value)"></div>
+    <div class="table-scroll"><table id="wh-table"><thead><tr><th>Warehouse</th><th>Size</th><th>Util %</th><th>Auto-Suspend</th><th>Owner</th><th>Credits/mo</th></tr></thead><tbody></tbody></table></div>
+  </div></div>
+  <div class="drill-journey" id="drill-journey-warehouse"></div>
+</section>
+
+<!-- QUERIES -->
+<section class="view" id="view-queries">
+  <div class="page-header"><h2>Query Performance</h2><p>Top credit consumers, scan patterns, and rewrite program status — self-join elimination via window functions and CASE statements.</p></div>
+  <p class="crossfilter-hint">Click chart segments to cross-filter · Click KPI cards for drill-through · Hover visuals for ⋯ export</p>
+  <div class="crossfilter-chips" id="cf-chips-queries"></div>
+  <div class="kpi-row" id="query-kpis"></div>
+  <div id="drill-queries" class="drill-panel"></div>
+  <div class="insight-bar" id="query-insight">✓ Self-join elimination program: 23 queries rewritten — 72% average compute reduction. Top 50 queries still represent 61% of total compute (down from 78%).</div>
+  <div class="chart-grid">
+    <div class="visual-host"><div class="chart-panel" data-cf-group="queries"><div class="chart-head"><h3>Compute by Query Pattern</h3></div><div class="chart-wrap"><canvas id="chart-query-pattern"></canvas></div></div></div>
+    <div class="visual-host"><div class="chart-panel" data-cf-group="queries"><div class="chart-head"><h3>Bytes Scanned — Weekly Trend</h3></div><div class="chart-wrap"><canvas id="chart-scan-trend"></canvas></div></div></div>
+  </div>
+  <div class="visual-host"><div class="table-panel" data-export-title="Query Detail"><div class="table-header"><h3>Query Detail & Rewrite Status</h3><input class="table-search" placeholder="Search query hash…" oninput="filterTable('query-table', this.value)"></div>
+    <div class="table-scroll"><table id="query-table"><thead><tr><th>Query Hash</th><th>Pattern</th><th>Warehouse</th><th>Credits (before)</th><th>Credits (after)</th><th>Reduction</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+  </div></div>
+  <div class="drill-journey" id="drill-journey-queries"></div>
+</section>
+
+<!-- STORAGE -->
+<section class="view" id="view-storage">
+  <div class="page-header"><h2>Storage & Data Lifecycle</h2><p>Table growth, Time Travel / Fail-safe, clustering coverage, and orphan table backlog.</p></div>
+  <p class="crossfilter-hint">Click chart segments to cross-filter · Click KPI cards for drill-through · Hover visuals for ⋯ export</p>
+  <div class="crossfilter-chips" id="cf-chips-storage"></div>
+  <div class="kpi-row" id="storage-kpis"></div>
+  <div id="drill-storage" class="drill-panel"></div>
+  <div class="chart-grid">
+    <div class="visual-host"><div class="chart-panel" data-cf-group="storage"><div class="chart-head"><h3>Storage Growth by Schema (TB)</h3></div><div class="chart-wrap tall"><canvas id="chart-storage-schema"></canvas></div></div></div>
+    <div class="visual-host"><div class="chart-panel" data-cf-group="storage"><div class="chart-head"><h3>Lifecycle Policy Compliance</h3></div><div class="chart-wrap tall"><canvas id="chart-lifecycle"></canvas></div></div></div>
+  </div>
+  <div class="visual-host"><div class="table-panel" data-export-title="Top Storage Drivers"><div class="table-header"><h3>Top Storage Drivers</h3></div>
+    <div class="table-scroll"><table id="storage-table"><thead><tr><th>Table</th><th>Schema</th><th>Size (TB)</th><th>Clustering</th><th>Time Travel (d)</th><th>Policy</th></tr></thead><tbody></tbody></table></div>
+  </div></div>
+  <div class="drill-journey" id="drill-journey-storage"></div>
+</section>
+
+<!-- ATTRIBUTION -->
+<section class="view" id="view-attribution">
+  <div class="page-header"><h2>Workload Attribution</h2><p>Chargeback-ready credit allocation by division, environment, BI tool, and service account.</p></div>
+  <p class="crossfilter-hint">Click chart segments to cross-filter · Click KPI cards for drill-through · Hover visuals for ⋯ export</p>
+  <div class="crossfilter-chips" id="cf-chips-attribution"></div>
+  <div class="kpi-row" id="attr-kpis"></div>
+  <div id="drill-attribution" class="drill-panel"></div>
+  <div class="chart-grid">
+    <div class="visual-host"><div class="chart-panel" data-cf-group="attribution"><div class="chart-head"><h3>Credits by BI Consumer</h3></div><div class="chart-wrap"><canvas id="chart-bi-tool"></canvas></div></div></div>
+    <div class="visual-host"><div class="chart-panel" data-cf-group="attribution"><div class="chart-head"><h3>Prod vs Non-Prod Split</h3></div><div class="chart-wrap"><canvas id="chart-env-split"></canvas></div></div></div>
+  </div>
+  <div class="visual-host"><div class="table-panel" data-export-title="Chargeback Allocation"><div class="table-header"><h3>Chargeback Allocation</h3></div>
+    <div class="table-scroll"><table id="attr-table"><thead><tr><th>Division</th><th>Environment</th><th>BI Tool</th><th>Credits</th><th>Share %</th><th>Owner</th></tr></thead><tbody></tbody></table></div>
+  </div></div>
+  <div class="drill-journey" id="drill-journey-attribution"></div>
+</section>
+
+<!-- PIPELINES -->
+<section class="view" id="view-pipelines">
+  <div class="page-header"><h2>Pipeline Modernization</h2><p>Legacy Alteryx / SSIS burndown, dbt production models, and Fivetran connector coverage.</p></div>
+  <p class="crossfilter-hint">Click chart segments to cross-filter · Click KPI cards for drill-through · Hover visuals for ⋯ export</p>
+  <div class="crossfilter-chips" id="cf-chips-pipelines"></div>
+  <div class="kpi-row" id="pipe-kpis"></div>
+  <div id="drill-pipelines" class="drill-panel"></div>
+  <div class="chart-grid">
+    <div class="visual-host"><div class="chart-panel" data-cf-group="pipelines"><div class="chart-head"><h3>Legacy Pipeline Burndown</h3></div><div class="chart-wrap tall"><canvas id="chart-burndown"></canvas></div></div></div>
+    <div class="visual-host"><div class="chart-panel" data-cf-group="pipelines"><div class="chart-head"><h3>Source Landing → Snowflake</h3></div><div class="chart-wrap tall"><canvas id="chart-sources"></canvas></div></div></div>
+  </div>
+  <div class="visual-host"><div class="table-panel" data-export-title="Pipeline Inventory"><div class="table-header"><h3>Pipeline Inventory</h3></div>
+    <div class="table-scroll"><table id="pipe-table"><thead><tr><th>Pipeline</th><th>Tool</th><th>Source</th><th>Target</th><th>Status</th><th>Owner</th></tr></thead><tbody></tbody></table></div>
+  </div></div>
+  <div class="drill-journey" id="drill-journey-pipelines"></div>
+</section>
+
+<!-- BACKLOG -->
+<section class="view" id="view-backlog">
+  <div class="page-header"><h2>Optimization Backlog</h2><p>Prioritized platform actions ranked by estimated credit savings — query rewrite, warehouse, clustering, storage, schedule.</p></div>
+  <p class="crossfilter-hint">Click chart segments to cross-filter · Click KPI cards for drill-through · Hover visuals for ⋯ export</p>
+  <div class="crossfilter-chips" id="cf-chips-backlog"></div>
+  <div class="kpi-row" id="backlog-kpis"></div>
+  <div id="drill-backlog" class="drill-panel"></div>
+  <div class="chart-grid">
+    <div class="visual-host"><div class="chart-panel" data-cf-group="backlog"><div class="chart-head"><h3>Backlog by Category</h3></div><div class="chart-wrap"><canvas id="chart-backlog-cat"></canvas></div></div></div>
+    <div class="visual-host"><div class="chart-panel" data-cf-group="backlog"><div class="chart-head"><h3>Estimated vs Realized Savings ($K/mo)</h3></div><div class="chart-wrap"><canvas id="chart-realized"></canvas></div></div></div>
+  </div>
+  <div class="visual-host"><div class="table-panel" data-export-title="Prioritized Actions"><div class="table-header"><h3>Prioritized Actions</h3></div>
+    <div class="table-scroll"><table id="backlog-table"><thead><tr><th>Priority</th><th>Action</th><th>Category</th><th>Est. Credits/mo</th><th>Effort</th><th>Status</th><th>Owner</th></tr></thead><tbody></tbody></table></div>
+  </div></div>
+  <div class="drill-journey" id="drill-journey-backlog"></div>
+</section>
+
+<!-- GLOSSARY PAGE -->
+<section class="view glossary-page" id="view-glossary">
+  <div class="page-header"><h2>Metric Glossary</h2><p>Governed definitions for every KPI and visual in this workspace — aligned to Platform Analytics semantic layer.</p></div>
+  <input type="text" class="table-search" style="width:100%;max-width:400px;margin-bottom:16px" placeholder="Search all metrics…" oninput="filterGlossaryPage(this.value)">
+  <div id="glossary-page-list"></div>
+</section>
+
+</main>
+
+<div class="footer-note">Anonymized or reconstructed portfolio case study to respect client confidentiality. Underlying thoughts, architecture, analytical approach, system design and solution views reflects the actual work.</div>
+
+<div class="export-modal-overlay" id="export-modal" onclick="if(event.target===this)closeExportModal()">
+  <div class="export-modal">
+    <div class="export-modal-head"><strong id="export-title">Export data</strong><button class="btn" onclick="closeExportModal()">✕</button></div>
+    <div class="export-modal-body"><pre id="export-preview"></pre></div>
+    <div class="export-modal-foot"><button class="btn" onclick="closeExportModal()">Cancel</button><button class="btn btn-primary" onclick="downloadExportCsv()">Download CSV</button></div>
+  </div>
+</div>
+
+<div class="tour-overlay" id="tour-overlay">
+  <div class="tour-spotlight" id="tour-spotlight"></div>
+  <div class="tour-card" id="tour-card" style="left:50%;bottom:32px;transform:translateX(-50%)">
+    <h4 id="tour-title"></h4>
+    <p id="tour-body"></p>
+    <div class="tour-card-actions">
+      <button class="btn" onclick="endTour()">Skip tour</button>
+      <span id="tour-step-num" style="font-size:11px;color:var(--text3)"></span>
+      <button class="btn btn-primary" onclick="nextTour()">Next</button>
+    </div>
+  </div>
+</div>
+<div class="app-toast" id="app-toast"></div>
+
+<!-- Glossary -->
+<div class="overlay" id="glossary-overlay" onclick="if(event.target===this)closeGlossary()">
+  <div class="modal">
+    <div class="modal-head"><h2>Metric Glossary (Quick)</h2><button class="btn" onclick="closeGlossary()">Close</button></div>
+    <div class="modal-body">
+      <input type="text" placeholder="Search metrics…" oninput="filterGlossary(this.value)">
+      <div id="glossary-list"></div>
+      <p style="font-size:12px;color:var(--text3);margin-top:12px">Full glossary → <a href="#" onclick="navigate('glossary');closeGlossary();return false" style="color:var(--portfolio-green)">Glossary tab</a></p>
+    </div>
+  </div>
+</div>
+
+<script src="dashboard-app.js"></script>
+</body>
+</html>
