@@ -51,11 +51,9 @@ function renderChrome() {
         <nav class="nav-links" aria-label="Main navigation">
           ${NAV_ITEMS.map((item) => `<a href="${item.href}">${item.label}</a>`).join("")}
           <span class="google-schedule-control google-schedule-control-mobile" data-google-schedule-button></span>
-          <a class="nav-resume-action nav-resume-action-mobile" href="resume.html">View résumé</a>
         </nav>
         <span class="google-schedule-control google-schedule-control-nav" data-google-schedule-button></span>
         <div class="nav-actions">
-          <a class="nav-resume-action nav-resume-action-desktop" href="resume.html">View résumé</a>
           <button class="mobile-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false">
             <span></span>
           </button>
