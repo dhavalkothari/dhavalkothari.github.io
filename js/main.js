@@ -8,6 +8,10 @@
  */
 const FORM_ENDPOINT = "https://formsubmit.co/ajax/9c1201f03ad5f01f0ecf4f3a5ddee253";
 
+const BOOKING_URL = "https://calendar.app.google/BGmovsgcMaz1fGqo7";
+const SCHEDULE_EMBED_URL =
+  "https://calendar.google.com/calendar/appointments/schedules/AcZssZ1r9nxnonI38A5s_VSo5L21rGRehDw9G-FXbGdfSQlb_CsxBMugM85rSLGMb-PRbzdTZ35k0plq?gv=true";
+
 const SOCIAL_LINKS = [
   { label: "LinkedIn", href: "https://www.linkedin.com/in/dhaval-kothari/" },
   { label: "Medium", href: "https://medium.com/@dhaval_kothari" },
@@ -17,6 +21,8 @@ const SOCIAL_LINKS = [
 const NAV_ITEMS = [
   { label: "Home", href: "index.html" },
   { label: "Work", href: "work.html" },
+  { label: "Services", href: "services.html" },
+  { label: "Blogs", href: "blogs.html" },
   { label: "About", href: "about.html" },
   { label: "Resume", href: "resume.html" },
   { label: "Contact", href: "contact.html" },
@@ -29,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderWorkIndex();
   renderCaseStudy();
   setupContactForm();
+  setupScheduler();
 });
 
 /**
@@ -46,7 +53,7 @@ function renderChrome() {
           ${NAV_ITEMS.map((item) => `<a href="${item.href}">${item.label}</a>`).join("")}
         </nav>
         <div class="nav-actions">
-          <a href="contact.html" class="nav-cta">Discuss a project</a>
+          <a class="nav-cta" href="https://calendar.app.google/BGmovsgcMaz1fGqo7" data-schedule-call>Schedule a call</a>
           <button class="mobile-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false">
             <span></span>
           </button>
@@ -62,6 +69,8 @@ function renderChrome() {
         <span>© 2026 Dhaval Kothari</span>
         <div class="footer-links">
           <a href="work.html">Work</a>
+          <a href="services.html">Services</a>
+          <a href="blogs.html">Blogs</a>
           <a href="about.html">About</a>
           <a href="contact.html">Contact</a>
           ${SOCIAL_LINKS.map(
@@ -92,11 +101,12 @@ function setupNav() {
   }
 
   const current = window.location.pathname.split("/").pop() || "index.html";
+  const activeFile = current.startsWith("blog-") ? "blogs.html" : current;
   document.querySelectorAll(".nav-links a").forEach((link) => {
     const href = link.getAttribute("href");
     if (!href) return;
     const match = href.split("/").pop();
-    if (match === current || (current === "" && match === "index.html")) {
+    if (match === activeFile || (activeFile === "" && match === "index.html")) {
       link.setAttribute("aria-current", "page");
     }
   });
@@ -277,8 +287,9 @@ function renderCaseStudy() {
             )
             .join("")}
         </div>
-        <div class="hero-actions" style="margin-top: 26px;">
+        <div class="hero-actions case-followup-actions">
           <a class="btn btn-primary" href="contact.html">Discuss a project</a>
+          <a class="btn btn-secondary" href="https://calendar.app.google/BGmovsgcMaz1fGqo7" data-schedule-call>Schedule a call ↗</a>
           <a class="btn btn-secondary" href="work.html">View all work</a>
         </div>
       </div>
@@ -345,5 +356,85 @@ function setupContactForm() {
         submit.textContent = submit.dataset.label || "Send project context";
       }
     }
+  });
+}
+
+
+let googleSchedulingPromise = null;
+
+/**
+ * Loads Google's own appointment-scheduling assets once, so a click can
+ * open the official booking pop-up on the same page instead of a new tab.
+ */
+function loadGoogleScheduling() {
+  if (!googleSchedulingPromise) {
+    googleSchedulingPromise = new Promise((resolve, reject) => {
+      const css = document.createElement("link");
+      css.rel = "stylesheet";
+      css.href = "https://calendar.google.com/calendar/scheduling-button-script.css";
+      document.head.appendChild(css);
+
+      const script = document.createElement("script");
+      script.src = "https://calendar.google.com/calendar/scheduling-button-script.js";
+      script.async = true;
+      script.onload = () => {
+        if (window.calendar && window.calendar.schedulingButton) {
+          resolve();
+        } else {
+          reject(new Error("Google scheduling API unavailable"));
+        }
+      };
+      script.onerror = () => reject(new Error("Google scheduling script failed to load"));
+      document.head.appendChild(script);
+    });
+  }
+  return googleSchedulingPromise;
+}
+
+/**
+ * Opens the booking pop-up by mounting Google's scheduling button in a
+ * hidden element and activating it. Falls back to the public booking
+ * link in a new tab if Google's script cannot load.
+ */
+function openBookingPopup() {
+  loadGoogleScheduling()
+    .then(() => {
+      const mount = document.createElement("div");
+      mount.style.position = "fixed";
+      mount.style.left = "-9999px";
+      mount.style.top = "0";
+      document.body.appendChild(mount);
+      window.calendar.schedulingButton.load({
+        url: SCHEDULE_EMBED_URL,
+        color: "#1D6F5F",
+        label: "Book an appointment",
+        target: mount,
+      });
+      const googleButton = mount.querySelector("button, a");
+      if (googleButton) {
+        googleButton.click();
+      } else {
+        throw new Error("Google scheduling button not rendered");
+      }
+    })
+    .catch(() => {
+      window.open(BOOKING_URL, "_blank", "noopener,noreferrer");
+    });
+}
+
+function setupScheduler() {
+  const triggers = document.querySelectorAll("[data-schedule-call]");
+  if (!triggers.length) return;
+
+  triggers.forEach((trigger) => {
+    if (trigger.tagName === "A") {
+      trigger.setAttribute("href", BOOKING_URL);
+      trigger.setAttribute("rel", "noopener noreferrer");
+    }
+
+    trigger.addEventListener("click", (event) => {
+      event.preventDefault();
+      openBookingPopup();
+    });
   });
 }

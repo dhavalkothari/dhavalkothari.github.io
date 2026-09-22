@@ -429,8 +429,8 @@ body.cs-workspace-locked{overflow:hidden}
   .cs-section{padding:clamp(2rem,5vw,3rem) 16px}
   .cs-section-inner{max-width:100%}
   .cs-nav-brand-text span{display:none}
-  .cs-workspace-tabs{padding:0 8px;-webkit-overflow-scrolling:touch}
-  .cs-workspace-tab{min-width:0;flex:1 1 auto;font-size:11px;padding:0 10px;min-height:44px}
+  .cs-workspace-tabs{padding:0 8px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+  .cs-workspace-tab{min-width:96px;flex:0 0 auto;font-size:11px;padding:0 12px;min-height:44px}
   .cs-workspace-subnav{overflow-x:auto;flex-wrap:nowrap;padding:10px 16px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
   .cs-workspace-subnav a{flex-shrink:0;min-height:40px;display:inline-flex;align-items:center}
   .cs-nav-actions .cs-btn-outline{display:none}
@@ -462,6 +462,7 @@ body.cs-workspace-locked{overflow:hidden}
   .cs-workspace-tab[data-short-label]::before{font-size:11px}
 }
 @media(max-width:480px){
+  .cs-workspace-tab{min-width:82px;padding:0 10px}
   .cs-hero-title{font-size:1.65rem}
   .cs-delivery-stat .num{font-size:1.45rem}
   .cs-nav-actions .cs-btn{padding:8px 12px;font-size:11px}
@@ -1039,7 +1040,9 @@ body.cs-workspace-locked{overflow:hidden}
 
   /* ─── RESPONSIVE ─── */
   @media (max-width: 768px) {
-    .header, .filters-bar, .nav-tabs, .main { padding-left: 16px; padding-right: 16px; }
+    .header, .filters-bar, .main { padding-left: 16px; padding-right: 16px; }
+    .nav-tabs { padding-left: 16px; padding-right: 16px; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+    .nav-tabs .nav-tab { flex: 0 0 auto; min-width: max-content; }
     .chart-card.wide { grid-column: span 1; }
     .kpi-row { grid-template-columns: repeat(2, 1fr); }
   }
