@@ -8,7 +8,6 @@
  */
 const FORM_ENDPOINT = "https://formsubmit.co/ajax/9c1201f03ad5f01f0ecf4f3a5ddee253";
 
-const BOOKING_URL = "https://calendar.app.google/BGmovsgcMaz1fGqo7";
 const SCHEDULE_EMBED_URL =
   "https://calendar.google.com/calendar/appointments/schedules/AcZssZ1r9nxnonI38A5s_VSo5L21rGRehDw9G-FXbGdfSQlb_CsxBMugM85rSLGMb-PRbzdTZ35k0plq?gv=true";
 
@@ -51,9 +50,12 @@ function renderChrome() {
         <a href="index.html" class="brand" aria-label="Dhaval Kothari home">Dhaval Kothari</a>
         <nav class="nav-links" aria-label="Main navigation">
           ${NAV_ITEMS.map((item) => `<a href="${item.href}">${item.label}</a>`).join("")}
+          <span class="google-schedule-control google-schedule-control-mobile" data-google-schedule-button></span>
+          <a class="nav-resume-action nav-resume-action-mobile" href="resume.html">View résumé</a>
         </nav>
+        <span class="google-schedule-control google-schedule-control-nav" data-google-schedule-button></span>
         <div class="nav-actions">
-          <a class="nav-cta" href="https://calendar.app.google/BGmovsgcMaz1fGqo7" data-schedule-call>Schedule a call</a>
+          <a class="nav-resume-action nav-resume-action-desktop" href="resume.html">View résumé</a>
           <button class="mobile-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false">
             <span></span>
           </button>
@@ -113,9 +115,13 @@ function setupNav() {
 }
 
 function caseCardMarkup(cs) {
-  const previewInner = cs.demoUrl
-    ? `<iframe src="${cs.demoUrl}" title="${cs.title} interactive preview" loading="lazy"></iframe>`
-    : `<img src="${cs.heroImage}" alt="${cs.heroImageAlt}" loading="lazy" />`;
+  const previewInner = cs.heroImage
+    ? `<img src="${cs.heroImage}" alt="${cs.heroImageAlt}" loading="lazy" />`
+    : `<div class="case-cover case-cover-${cs.slug}" role="img" aria-label="${cs.heroImageAlt}">
+        <span class="case-cover-kicker">${cs.category}</span>
+        <span class="case-cover-title">${cs.title}</span>
+        <span class="case-cover-signal" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      </div>`;
 
   return `
     <article class="case-card">
@@ -125,7 +131,6 @@ function caseCardMarkup(cs) {
         <h3>${cs.title}</h3>
         <p>${cs.summary}</p>
         <div class="case-meta">${cs.tags.map((t) => `<span>${t}</span>`).join("")}</div>
-        <p class="case-disclosure">${cs.disclosure}</p>
         <a href="case-study.html?slug=${cs.slug}" class="case-link">View case study <span>→</span></a>
       </div>
     </article>
@@ -289,7 +294,7 @@ function renderCaseStudy() {
         </div>
         <div class="hero-actions case-followup-actions">
           <a class="btn btn-primary" href="contact.html">Discuss a project</a>
-          <a class="btn btn-secondary" href="https://calendar.app.google/BGmovsgcMaz1fGqo7" data-schedule-call>Schedule a call ↗</a>
+          <span class="google-schedule-control" data-google-schedule-button></span>
           <a class="btn btn-secondary" href="work.html">View all work</a>
         </div>
       </div>
@@ -363,8 +368,7 @@ function setupContactForm() {
 let googleSchedulingPromise = null;
 
 /**
- * Loads Google's own appointment-scheduling assets once, so a click can
- * open the official booking pop-up on the same page instead of a new tab.
+ * Loads Google's official Appointment Scheduling assets once.
  */
 function loadGoogleScheduling() {
   if (!googleSchedulingPromise) {
@@ -392,49 +396,38 @@ function loadGoogleScheduling() {
 }
 
 /**
- * Opens the booking pop-up by mounting Google's scheduling button in a
- * hidden element and activating it. Falls back to the public booking
- * link in a new tab if Google's script cannot load.
+ * Renders Google's own accessible scheduling button into every shared
+ * mount point. Google owns the click, popup, close, and repeat-open flow.
  */
-function openBookingPopup() {
+function setupScheduler() {
+  const mounts = document.querySelectorAll("[data-google-schedule-button]");
+  if (!mounts.length) return;
+
   loadGoogleScheduling()
     .then(() => {
-      const mount = document.createElement("div");
-      mount.style.position = "fixed";
-      mount.style.left = "-9999px";
-      mount.style.top = "0";
-      document.body.appendChild(mount);
-      window.calendar.schedulingButton.load({
-        url: SCHEDULE_EMBED_URL,
-        color: "#1D6F5F",
-        label: "Book an appointment",
-        target: mount,
+      mounts.forEach((mount) => {
+        window.calendar.schedulingButton.load({
+          url: SCHEDULE_EMBED_URL,
+          color: "#17392F",
+          label: "Schedule a call",
+          target: mount,
+        });
+
+        const button = mount.nextElementSibling;
+        if (button instanceof HTMLButtonElement) {
+          button.addEventListener("click", () => {
+            const nav = document.querySelector(".nav-links");
+            const toggle = document.querySelector(".mobile-toggle");
+            nav?.classList.remove("open");
+            toggle?.setAttribute("aria-expanded", "false");
+          });
+        }
       });
-      const googleButton = mount.querySelector("button, a");
-      if (googleButton) {
-        googleButton.click();
-      } else {
-        throw new Error("Google scheduling button not rendered");
-      }
     })
     .catch(() => {
-      window.open(BOOKING_URL, "_blank", "noopener,noreferrer");
+      mounts.forEach((mount) => {
+        mount.textContent = "Scheduling is temporarily unavailable.";
+        mount.classList.add("google-schedule-control-error");
+      });
     });
-}
-
-function setupScheduler() {
-  const triggers = document.querySelectorAll("[data-schedule-call]");
-  if (!triggers.length) return;
-
-  triggers.forEach((trigger) => {
-    if (trigger.tagName === "A") {
-      trigger.setAttribute("href", BOOKING_URL);
-      trigger.setAttribute("rel", "noopener noreferrer");
-    }
-
-    trigger.addEventListener("click", (event) => {
-      event.preventDefault();
-      openBookingPopup();
-    });
-  });
 }

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://dhavalkothari.github.io/sitemap.xml
+Sitemap: https://[FINAL_CUSTOM_DOMAIN]/sitemap.xml

@@ -162,10 +162,10 @@ h3 {
 
 .nav {
   height: 80px;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
+  gap: clamp(16px, 2vw, 28px);
 }
 
 .brand {
@@ -178,7 +178,8 @@ h3 {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 30px;
+  justify-content: flex-start;
+  gap: clamp(14px, 1.6vw, 26px);
   font-size: 0.94rem;
   color: var(--muted);
 }
@@ -234,6 +235,31 @@ h3 {
   display: flex;
   align-items: center;
   gap: 14px;
+}
+
+.nav-resume-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.68rem 1.08rem;
+  border: 1px solid var(--green);
+  border-radius: 999px;
+  background: var(--green);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.nav-resume-action:hover {
+  background: var(--green-2);
+  transform: translateY(-1px);
+}
+
+.nav-resume-action-mobile {
+  display: none;
 }
 
 .mobile-toggle {
@@ -626,11 +652,86 @@ h3 {
   display: block;
 }
 
-.case-body {
-  padding: 22px 22px 26px;
+.case-cover {
+  position: relative;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 28px;
+  overflow: hidden;
+  color: var(--gold-soft);
+  background-color: var(--green);
+  background-image:
+    linear-gradient(var(--line-strong) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-strong) 1px, transparent 1px);
+  background-size: 34px 34px;
+}
+
+.case-cover::after {
+  content: "";
+  position: absolute;
+  inset: 18% 9% 20% 28%;
+  border: 1px solid rgba(242, 230, 205, 0.36);
+  background: rgba(14, 33, 28, 0.72);
+}
+
+.case-cover-snowflake-finops-command-center::after {
+  inset: 14% 10% 25% 38%;
+  border-radius: 50%;
+}
+
+.case-cover-kicker,
+.case-cover-title {
+  position: relative;
+  z-index: 2;
+}
+
+.case-cover-kicker {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.case-cover-title {
+  max-width: 78%;
+  font-family: var(--serif);
+  font-size: clamp(1.35rem, 2.2vw, 2rem);
+  font-weight: 600;
+  line-height: 1.08;
+}
+
+.case-cover-signal {
+  position: absolute;
+  z-index: 2;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  align-items: end;
+  gap: 6px;
+  height: 48px;
+}
+
+.case-cover-signal i {
+  display: block;
+  width: 7px;
+  background: var(--gold);
+}
+
+.case-cover-signal i:nth-child(1) { height: 34%; }
+.case-cover-signal i:nth-child(2) { height: 58%; }
+.case-cover-signal i:nth-child(3) { height: 44%; }
+.case-cover-signal i:nth-child(4) { height: 88%; }
+
+.case-body {
+  padding: 20px 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   flex: 1;
 }
 
@@ -668,12 +769,6 @@ h3 {
   text-transform: uppercase;
   padding: 0.42rem 0.68rem;
   border-radius: 999px;
-}
-
-.case-disclosure {
-  font-size: 0.82rem;
-  color: var(--muted-2);
-  font-style: italic;
 }
 
 .case-link {
@@ -1472,10 +1567,20 @@ body.modal-open {
   margin-top: 20px;
 }
 
+.blog-index {
+  display: grid;
+  gap: 24px;
+}
+
 .blog-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 24px;
+}
+
+.blog-grid-secondary {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
 }
 
 .blog-card {
@@ -1486,10 +1591,29 @@ body.modal-open {
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.blog-card:hover,
+.blog-card:focus-within {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--line-strong);
+}
+
+.blog-card-featured {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.9fr);
+  min-height: 350px;
+}
+
+.blog-card-featured .blog-card-image {
+  aspect-ratio: auto;
+  min-height: 350px;
 }
 
 .blog-card-image {
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 8.5;
   background: var(--green-soft);
   overflow: hidden;
 }
@@ -1498,17 +1622,27 @@ body.modal-open {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
+  transition: transform 0.35s ease;
+}
+
+.blog-card:hover .blog-card-image img,
+.blog-card:focus-within .blog-card-image img {
+  transform: scale(1.025);
 }
 
 .blog-card-body {
-  padding: 22px;
+  padding: 19px 20px 21px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 9px;
   flex: 1;
 }
 
 .blog-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
   color: var(--gold);
   font-size: 0.78rem;
   font-weight: 800;
@@ -1517,7 +1651,7 @@ body.modal-open {
 }
 
 .blog-card h2 {
-  font-size: 1.32rem;
+  font-size: 1.22rem;
   line-height: 1.12;
 }
 
@@ -1538,10 +1672,7 @@ body.modal-open {
 }
 
 .article-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 760px) minmax(220px, 1fr);
-  gap: 42px;
-  align-items: start;
+  max-width: 860px;
   padding: 42px 0 100px;
 }
 
@@ -1612,129 +1743,56 @@ body.modal-open {
   border-bottom: 1px solid currentColor;
 }
 
-.article-aside {
-  position: sticky;
-  top: 104px;
+.google-schedule-control {
+  display: contents;
 }
 
-.article-source-card {
-  background: var(--panel-muted);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  padding: 22px;
+.google-schedule-control + button {
+  min-height: 48px !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+  font-family: var(--sans) !important;
+  font-size: 0.96rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0 !important;
 }
 
-.article-source-card p {
+.google-schedule-control-nav + button {
+  min-height: 40px !important;
+  padding-inline: 15px !important;
+  font-size: 0.84rem !important;
+}
+
+/* Google injects the official appointment dialog directly under body. */
+body > div:has(> iframe[title="Schedule a call"]) {
+  z-index: 10000 !important;
+  background: rgba(8, 16, 14, 0.84) !important;
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+
+body > div:has(> iframe[title="Schedule a call"]) > iframe[title="Schedule a call"] {
+  background: var(--panel) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: 0 28px 80px rgba(8, 16, 14, 0.36) !important;
+  color-scheme: light;
+}
+
+body > div:has(> iframe[title="Schedule a call"]) > button {
+  z-index: 1 !important;
+  box-shadow: 0 4px 18px rgba(8, 16, 14, 0.28) !important;
+}
+
+.google-schedule-control-error {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
   color: var(--muted);
+  font-size: 0.9rem;
 }
 
-.scheduler-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 500;
+.google-schedule-control-mobile + button {
   display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(22, 33, 29, 0.62);
-}
-
-.scheduler-modal.open {
-  display: flex;
-}
-
-.scheduler-panel {
-  width: min(980px, 100%);
-  max-height: min(880px, 92vh);
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-soft);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--line);
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
-}
-
-.scheduler-panel-compact {
-  width: min(620px, 100%);
-}
-
-.scheduler-head {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 22px 24px;
-  border-bottom: 1px solid var(--line);
-}
-
-.scheduler-head h2 {
-  font-size: 1.35rem;
-  margin-top: 6px;
-}
-
-.scheduler-close {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 1px solid var(--line);
-  background: var(--panel);
-  cursor: pointer;
-  font-size: 1.6rem;
-  line-height: 1;
-}
-
-.scheduler-frame-wrap {
-  height: min(66vh, 660px);
-  min-height: 440px;
-  background: var(--panel);
-}
-
-.scheduler-frame-wrap iframe {
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-
-.scheduler-card {
-  padding: 24px;
-  background: var(--bg-soft);
-}
-
-.scheduler-card p {
-  color: var(--muted);
-  margin: 20px 0 22px;
-}
-
-.scheduler-card-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.scheduler-card-grid span {
-  padding: 16px 14px;
-  border-radius: var(--radius-sm);
-  background: var(--panel);
-  border: 1px solid var(--line);
-  color: var(--green);
-  font-family: var(--serif);
-  font-weight: 700;
-  text-align: center;
-}
-
-.scheduler-main-action {
-  width: 100%;
-}
-
-.scheduler-fallback {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 14px 18px;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 0.92rem;
 }
 
 .case-followup-actions {
@@ -1742,8 +1800,8 @@ body.modal-open {
 }
 
 @media (max-width: 1100px) {
-  .nav { gap: 14px; }
-  .nav-links { gap: 18px; }
+  .nav { gap: 12px; }
+  .nav-links { gap: 13px; font-size: 0.88rem; }
   .blog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
@@ -1772,6 +1830,14 @@ body.modal-open {
     padding: 12px 0;
     border-bottom: 1px solid var(--line);
   }
+  .nav-links .nav-resume-action-mobile {
+    display: inline-flex;
+    width: 100%;
+    margin-top: 2px;
+    border-bottom: 1px solid var(--green);
+    padding: 0.82rem 1rem;
+  }
+  .nav-resume-action-desktop { display: none; }
   .mobile-toggle[aria-expanded="true"] span {
     background: transparent;
   }
@@ -1791,11 +1857,10 @@ body.modal-open {
     min-width: 0;
     width: 100%;
   }
-  .article-layout {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-  .article-aside { position: static; }
+  .google-schedule-control-nav + button { display: none; }
+  .google-schedule-control-mobile + button { display: inline-flex; width: 100%; margin-top: 4px; }
+  .blog-card-featured { grid-template-columns: 1fr; min-height: 0; }
+  .blog-card-featured .blog-card-image { min-height: 0; aspect-ratio: 16 / 10; }
 }
 
 @media (max-width: 700px) {
@@ -1811,11 +1876,19 @@ body.modal-open {
   .footer-row { align-items: flex-start; }
   .footer-links { gap: 12px 18px; }
   .page-hero-system::after { width: 240px; opacity: 0.24; }
-  .scheduler-modal { padding: 10px; align-items: stretch; }
-  .scheduler-panel { max-height: 96vh; border-radius: var(--radius-md); }
-  .scheduler-head { padding: 18px; }
-  .scheduler-frame-wrap { min-height: 54vh; height: 62vh; }
-  .scheduler-fallback { flex-direction: column; align-items: stretch; }
+  .google-schedule-control + button { width: 100%; }
+  body > div:has(> iframe[title="Schedule a call"]) {
+    padding: 56px 10px 10px !important;
+  }
+  body > div:has(> iframe[title="Schedule a call"]) > iframe[title="Schedule a call"] {
+    width: calc(100vw - 20px) !important;
+    height: calc(100svh - 66px) !important;
+    margin: 0 !important;
+  }
+  body > div:has(> iframe[title="Schedule a call"]) > button {
+    top: 10px !important;
+    right: 10px !important;
+  }
 }
 
 @media (max-width: 430px) {

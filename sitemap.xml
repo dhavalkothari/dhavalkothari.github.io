@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://dhavalkothari.github.io/</loc></url>
-  <url><loc>https://dhavalkothari.github.io/work.html</loc></url>
-  <url><loc>https://dhavalkothari.github.io/services.html</loc></url>
-  <url><loc>https://dhavalkothari.github.io/blogs.html</loc></url>
-  <url><loc>https://dhavalkothari.github.io/case-study.html?slug=enterprise-infrastructure-intelligence</loc></url>
-  <url><loc>https://dhavalkothari.github.io/case-study.html?slug=snowflake-finops-command-center</loc></url>
-  <url><loc>https://dhavalkothari.github.io/case-study.html?slug=action-item-tracker</loc></url>
-  <url><loc>https://dhavalkothari.github.io/case-study.html?slug=freemium-learning-analytics</loc></url>
-  <url><loc>https://dhavalkothari.github.io/about.html</loc></url>
-  <url><loc>https://dhavalkothari.github.io/resume.html</loc></url>
-  <url><loc>https://dhavalkothari.github.io/contact.html</loc></url>
-  <url><loc>https://dhavalkothari.github.io/blog-sql-rewrite-90-minutes-to-under-10.html</loc></url>
-  <url><loc>https://dhavalkothari.github.io/blog-fabric-directquery-faster-than-snowflake.html</loc></url>
-  <url><loc>https://dhavalkothari.github.io/blog-humans-and-ai-behavioural-resemblance.html</loc></url>
+  <url><loc>https://[FINAL_CUSTOM_DOMAIN]/</loc></url>
+  <url><loc>https://[FINAL_CUSTOM_DOMAIN]/work.html</loc></url>
+  <url><loc>https://[FINAL_CUSTOM_DOMAIN]/services.html</loc></url>
+  <url><loc>https://[FINAL_CUSTOM_DOMAIN]/blogs.html</loc></url>
+  <url><loc>https://[FINAL_CUSTOM_DOMAIN]/case-study.html?slug=enterprise-infrastructure-intelligence</loc></url>
+  <url><loc>https://[FINAL_CUSTOM_DOMAIN]/case-study.html?slug=snowflake-finops-command-center</loc></url>
+  <url><loc>https://[FINAL_CUSTOM_DOMAIN]/case-study.html?slug=action-item-tracker</loc></url>
+  <url><loc>https://[FINAL_CUSTOM_DOMAIN]/case-study.html?slug=freemium-learning-analytics</loc></url>
+  <url><loc>https://[FINAL_CUSTOM_DOMAIN]/about.html</loc></url>
+  <url><loc>https://[FINAL_CUSTOM_DOMAIN]/resume.html</loc></url>
+  <url><loc>https://[FINAL_CUSTOM_DOMAIN]/contact.html</loc></url>
+  <url><loc>https://[FINAL_CUSTOM_DOMAIN]/blog-sql-rewrite-90-minutes-to-under-10.html</loc></url>
+  <url><loc>https://[FINAL_CUSTOM_DOMAIN]/blog-fabric-directquery-faster-than-snowflake.html</loc></url>
+  <url><loc>https://[FINAL_CUSTOM_DOMAIN]/blog-humans-and-ai-behavioural-resemblance.html</loc></url>
 </urlset>
