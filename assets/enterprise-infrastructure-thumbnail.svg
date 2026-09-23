@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-labelledby="title desc">
+  <title id="title">Enterprise infrastructure intelligence thumbnail</title>
+  <desc id="desc">An infrastructure topology showing cloud, data center, storage, risk, and modernization signals connected to an executive intelligence hub.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#123d35"/><stop offset="1" stop-color="#092620"/></linearGradient>
+    <linearGradient id="hub" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d3b15f"/><stop offset="1" stop-color="#a78232"/></linearGradient>
+  </defs>
+  <rect width="800" height="500" rx="28" fill="url(#bg)"/>
+  <path d="M0 100h800M0 200h800M0 300h800M0 400h800M100 0v500M200 0v500M300 0v500M400 0v500M500 0v500M600 0v500M700 0v500" stroke="#b8e2cf" stroke-opacity=".07"/>
+  <text x="48" y="53" fill="#d3b15f" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="3">INFRAANALYTICS</text>
+  <text x="48" y="84" fill="#edf1e6" font-family="Inter, Arial, sans-serif" font-size="27" font-weight="700">One view. Every domain.</text>
+  <text x="48" y="111" fill="#a6cfc0" font-family="Inter, Arial, sans-serif" font-size="12">PORTFOLIO INTELLIGENCE MAP · 12 → 1 REPORTING TOOLS</text>
+  <g stroke="#75c9b1" stroke-opacity=".65" stroke-width="2" stroke-dasharray="5 6">
+    <path d="M400 276L150 190"/><path d="M400 276L650 190"/><path d="M400 276L155 383"/><path d="M400 276L650 383"/><path d="M400 276L400 160"/>
+  </g>
+  <circle cx="400" cy="276" r="82" fill="#0d3028" stroke="#d3b15f" stroke-width="3"/>
+  <circle cx="400" cy="276" r="62" fill="url(#hub)" fill-opacity=".18"/>
+  <text x="400" y="264" text-anchor="middle" fill="#f4f2df" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700">EXECUTIVE</text>
+  <text x="400" y="291" text-anchor="middle" fill="#f4f2df" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700">TRUTH</text>
+  <text x="400" y="318" text-anchor="middle" fill="#a6cfc0" font-family="Inter, Arial, sans-serif" font-size="11">spend · risk · capacity</text>
+  <g fill="#e9f0e7" fill-opacity=".1" stroke="#75c9b1" stroke-width="2">
+    <rect x="78" y="145" width="145" height="74" rx="12"/><rect x="577" y="145" width="145" height="74" rx="12"/>
+    <rect x="78" y="350" width="155" height="74" rx="12"/><rect x="567" y="350" width="155" height="74" rx="12"/>
+    <rect x="326" y="125" width="148" height="65" rx="12"/>
+  </g>
+  <g fill="#d3b15f" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">
+    <text x="101" y="174">CLOUD COMPUTE</text><text x="603" y="174">ON-PREM ESTATE</text>
+    <text x="101" y="379">STORAGE + CAPACITY</text><text x="596" y="379">RISK + COMPLIANCE</text>
+    <text x="351" y="153">MODERNIZATION</text>
+  </g>
+  <g fill="#a6cfc0" font-family="Inter, Arial, sans-serif" font-size="11">
+    <text x="101" y="197">utilization · cost</text><text x="603" y="197">assets · lifecycle</text>
+    <text x="101" y="402">growth · headroom</text><text x="596" y="402">exposure · action</text>
+    <text x="351" y="176">52% progress</text>
+  </g>
+  <rect x="651" y="33" width="101" height="30" rx="15" fill="#d3b15f"/>
+  <text x="671" y="53" fill="#123d35" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700">EXECUTIVE VIEW</text>
+</svg>

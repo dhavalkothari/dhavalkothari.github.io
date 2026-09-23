@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-labelledby="title desc">
+  <title id="title">Snowflake FinOps command center thumbnail</title>
+  <desc id="desc">A Snowflake platform control room with a snowflake mark, warehouse workload bars, query queue, and optimization backlog.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#102f3d"/><stop offset="1" stop-color="#08202c"/></linearGradient>
+    <linearGradient id="ice" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#55d0f3"/><stop offset="1" stop-color="#a5f1e2"/></linearGradient>
+  </defs>
+  <rect width="800" height="500" rx="28" fill="url(#bg)"/>
+  <path d="M0 102h800M0 204h800M0 306h800M0 408h800M100 0v500M200 0v500M300 0v500M400 0v500M500 0v500M600 0v500M700 0v500" stroke="#9de7f5" stroke-opacity=".07"/>
+  <text x="48" y="53" fill="#55d0f3" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="3">SNOWFLAKE FINOPS</text>
+  <text x="48" y="84" fill="#eef8fb" font-family="Inter, Arial, sans-serif" font-size="27" font-weight="700">Control the warehouse.</text>
+  <text x="48" y="111" fill="#9ddbe9" font-family="Inter, Arial, sans-serif" font-size="12">COST · PERFORMANCE · OWNERSHIP · ACTION</text>
+  <rect x="48" y="139" width="235" height="275" rx="15" fill="#dff8ff" fill-opacity=".08" stroke="#9de7f5" stroke-opacity=".25"/>
+  <g stroke="#55d0f3" stroke-width="4" stroke-linecap="round">
+    <path d="M165 184v90M120 210l90 52M120 262l90-52M165 165v128M101 230l128 74M101 304l128-74"/>
+  </g>
+  <circle cx="165" cy="230" r="24" fill="url(#ice)"/>
+  <text x="83" y="350" fill="#eef8fb" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700">18.4K credits</text>
+  <text x="83" y="376" fill="#9ddbe9" font-family="Inter, Arial, sans-serif" font-size="12">across governed workloads</text>
+  <rect x="307" y="139" width="445" height="128" rx="15" fill="#dff8ff" fill-opacity=".08" stroke="#9de7f5" stroke-opacity=".25"/>
+  <text x="332" y="169" fill="#eef8fb" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">WAREHOUSE LOAD</text>
+  <g fill="#55d0f3">
+    <rect x="333" y="194" width="102" height="16" rx="8"/><rect x="333" y="220" width="204" height="16" rx="8"/>
+    <rect x="333" y="246" width="151" height="16" rx="8"/>
+  </g>
+  <g fill="#9ddbe9" font-family="Inter, Arial, sans-serif" font-size="11">
+    <text x="555" y="207">BI_PROD · 42%</text><text x="555" y="233">TRANSFORM · 84%</text><text x="501" y="259">AD_HOC · 62%</text>
+  </g>
+  <rect x="307" y="291" width="445" height="123" rx="15" fill="#dff8ff" fill-opacity=".08" stroke="#9de7f5" stroke-opacity=".25"/>
+  <text x="332" y="321" fill="#eef8fb" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">OPTIMIZATION QUEUE</text>
+  <g font-family="Inter, Arial, sans-serif" font-size="12">
+    <circle cx="340" cy="350" r="6" fill="#a5f1e2"/><text x="357" y="354" fill="#ccebf2">Right-size TRANSFORM warehouse</text><text x="688" y="354" fill="#55d0f3">HIGH</text>
+    <circle cx="340" cy="378" r="6" fill="#d3b15f"/><text x="357" y="382" fill="#ccebf2">Review costly ad-hoc queries</text><text x="688" y="382" fill="#d3b15f">NEXT</text>
+  </g>
+  <rect x="650" y="33" width="102" height="30" rx="15" fill="#55d0f3"/>
+  <text x="669" y="53" fill="#08202c" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700">PLATFORM OPS</text>
+</svg>

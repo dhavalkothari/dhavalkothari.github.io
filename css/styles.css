@@ -1,6 +1,6 @@
 /* =========================================================
    Dhaval Kothari — Portfolio design system
-   Editorial serif display + clean sans body, warm neutral
+   Professional sans typography, warm neutral
    surfaces, dark ink-green foundation, restrained gold accent.
    ========================================================= */
 
@@ -27,7 +27,6 @@
   --radius-md: 16px;
   --radius-sm: 10px;
   --container: min(1180px, calc(100vw - 48px));
-  --serif: "Fraunces", Georgia, "Times New Roman", serif;
   --sans: "Inter", "Segoe UI", system-ui, sans-serif;
 }
 
@@ -123,7 +122,7 @@ ul {
 h1,
 h2,
 h3 {
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--ink);
@@ -169,7 +168,7 @@ h3 {
 }
 
 .brand {
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -344,6 +343,17 @@ h3 {
   color: var(--ink);
 }
 
+.message-cta {
+  padding: 0.72rem 1.2rem;
+  font-size: 0.92rem;
+  background: #356b78;
+  color: #fff;
+}
+
+.message-cta:hover {
+  background: #285661;
+}
+
 /* ---------- Hero ---------- */
 
 .hero {
@@ -375,6 +385,17 @@ h3 {
   flex-wrap: wrap;
   gap: 14px;
   margin-bottom: 26px;
+}
+
+.hero-actions .btn {
+  background: var(--green);
+  color: #fff;
+  border-color: var(--green);
+}
+
+.hero-actions .btn:hover {
+  background: var(--green-2);
+  border-color: var(--green-2);
 }
 
 .portrait-frame {
@@ -566,7 +587,7 @@ h3 {
 
 .value-card b {
   display: block;
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: 1.15rem;
   margin-bottom: 10px;
 }
@@ -674,7 +695,7 @@ h3 {
 
 .case-cover-title {
   max-width: 78%;
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: clamp(1.35rem, 2.2vw, 2rem);
   font-weight: 600;
   line-height: 1.08;
@@ -787,7 +808,7 @@ h3 {
 }
 
 .service-card .num {
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: 0.9rem;
   color: var(--gold);
   font-weight: 700;
@@ -833,7 +854,7 @@ h3 {
 }
 
 .approach-step .step-num {
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: 1.6rem;
   color: var(--green);
   opacity: 0.5;
@@ -899,7 +920,7 @@ h3 {
 
 .metric-card strong {
   display: block;
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: clamp(1.8rem, 3vw, 2.4rem);
   color: var(--gold-soft);
 }
@@ -1035,7 +1056,7 @@ h3 {
 
 .story-metric strong {
   display: block;
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: 1.1rem;
   margin-bottom: 4px;
 }
@@ -1489,7 +1510,7 @@ body.modal-open {
   border-radius: var(--radius-sm);
   padding: 16px 14px;
   background: var(--panel-muted);
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-weight: 700;
   color: var(--green);
   text-align: center;
@@ -1520,7 +1541,7 @@ body.modal-open {
 
 .service-detail-card .num {
   color: var(--gold);
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-weight: 700;
 }
 
